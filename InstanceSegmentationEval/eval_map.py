@@ -25,3 +25,6 @@ evaluator.params.maxDets = [1, 10, 500]
 evaluator.evaluate()
 evaluator.accumulate()
 evaluator.summarize()
+
+
+#valid 평가 mAP@50 = 0.616

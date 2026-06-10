@@ -119,3 +119,6 @@ with open(VALID_OUTPUT_JSON_PATH, "w", encoding="utf-8") as f:
 
 print("saved:", VALID_OUTPUT_JSON_PATH)
 print("prediction count:", len(predictions))
+
+
+#valid_predictions.json
