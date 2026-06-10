@@ -21,7 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dataID_mapping.py">
+    <Compile Include="eval_map.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InstanceSegmentationEval.py" />
