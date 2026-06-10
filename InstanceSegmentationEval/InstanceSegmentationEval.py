@@ -72,3 +72,57 @@ model = RFDETRSegMedium.from_checkpoint(str(MODEL_PATH))
 
 print("\n")
 print("-------------------------- INFERENCE --------------------------")
+
+predictions = []
+
+for idx, image_info in enumerate(images, start=1):
+    image_id = image_info["id"]
+    file_name = image_info["file_name"]
+    image_path = VALID_DIR / file_name
+
+    print(f"[{idx}/{len(images)}] inference: {file_name}")
+
+    image = Image.open(image_path).convert("RGB")
+
+    detections = model.predict(image, threshold=0.05)
+
+    if detections.mask is None:
+        continue
+
+    for mask, class_id, score in zip(
+        detections.mask,
+        detections.class_id,
+        detections.confidence
+    ):
+        mask = np.asfortranarray(mask.astype(np.uint8))
+
+        rle = mask_utils.encode(mask)
+        rle["counts"] = rle["counts"].decode("utf-8")
+
+        # 중요:
+        # 모델 class_id는 0부터 background, band, beltloop...
+        # COCO category_id는 1부터 background, band, beltloop...
+        # 그래서 +1 보정 필요
+        coco_category_id = int(class_id) + 1
+
+        predictions.append({
+            "image_id": int(image_id),
+            "category_id": coco_category_id,
+            "segmentation": rle,
+            "score": float(score),
+        })
+
+
+        
+print("\n")
+print("-------------------------- PREDICTION JSON --------------------------")
+
+OUTPUT_JSON_PATH = PROJECT_ROOT / "valid_predictions.json"
+
+with open(OUTPUT_JSON_PATH, "w", encoding="utf-8") as f:
+    json.dump(predictions, f)
+
+print()
+print("-------------------------- SAVE RESULT --------------------------")
+print("saved:", OUTPUT_JSON_PATH)
+print("prediction count:", len(predictions))
