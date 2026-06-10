@@ -97,11 +97,6 @@ def run_valid_inference(threshold):
 
     return output_json_path, len(predictions)
 
-
-# --------------------------------------------------
-# 7. EVALUATION FUNCTION
-# --------------------------------------------------
-
 def evaluate_map50(pred_json_path):
     if not pred_json_path.exists():
         raise FileNotFoundError(f"prediction json not found: {pred_json_path}")
@@ -124,7 +119,6 @@ def evaluate_map50(pred_json_path):
 
     precision = evaluator.eval["precision"]
 
-    # precision shape:
     # [iou, recall, category, area, maxDets]
     precision_values = precision[0, :, :, 0, 2]
     valid_precision_values = precision_values[precision_values > -1]
@@ -133,11 +127,6 @@ def evaluate_map50(pred_json_path):
         return 0.0
 
     return float(np.mean(valid_precision_values))
-
-
-# --------------------------------------------------
-# 8. RUN THRESHOLD TUNING
-# --------------------------------------------------
 
 results = []
 
@@ -155,11 +144,6 @@ for threshold in THRESHOLDS:
     print()
     print(f"threshold={threshold:.2f}, prediction_count={pred_count}, mAP@50={map50:.3f}")
 
-
-# --------------------------------------------------
-# 9. SAVE RESULT CSV
-# --------------------------------------------------
-
 with open(RESULT_CSV_PATH, "w", newline="", encoding="utf-8-sig") as f:
     writer = csv.DictWriter(
         f,
@@ -173,11 +157,6 @@ with open(RESULT_CSV_PATH, "w", newline="", encoding="utf-8-sig") as f:
 
     writer.writeheader()
     writer.writerows(results)
-
-
-# --------------------------------------------------
-# 10. PRINT SUMMARY
-# --------------------------------------------------
 
 best_result = max(results, key=lambda x: x["map50"])
 
