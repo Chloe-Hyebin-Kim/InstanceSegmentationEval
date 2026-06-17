@@ -1,26 +1,27 @@
-# 1-1. 사전학습 Instance Segmentation 모델 Inference 및 평가 보고서
+# 1. 사전학습 Instance Segmentation 모델 Inference 및 평가
 
-## 1. 과제 목표
+<br>
 
+## 1-1. 과제 목표
 본 과제의 목표는 제공된 의상 파트 분류 데이터셋과 사전학습된 instance segmentation 모델 파일 `IS_pretrained_bottom.pt`를 사용하여 validation set과 test set에 대해 inference를 수행하고, 모델의 segmentation 성능을 정량적으로 평가하는 것이다.
-
 평가 항목은 다음과 같다.
-
-1. validation set과 test set에 대한 전체 segmentation mAP@50
-2. 클래스별 AP@50
-3. 클래스별 GT 개수, 예측 개수
-4. 클래스별 TP, FP, FN
-5. 클래스별 Precision, Recall
+   1. validation set과 test set에 대한 전체 segmentation mAP@50
+   2. 클래스별 AP@50
+   3. 클래스별 GT 개수, 예측 개수
+   4. 클래스별 TP, FP, FN
+   5. 클래스별 Precision, Recall
 
 평가는 COCO format annotation과 COCO result JSON format prediction을 기준으로 수행하였다.
 
----
+<br>
+<br>
 
-## 2. 프로젝트 구성
+## 1-2. 프로젝트 구성
 
 본 구현에서는 실행 진입점과 평가 로직을 분리하였다.
 
 ```text
+
 InstanceSegmentationEval/
 │
 ├─ InstanceSegmentationEval.py
@@ -54,11 +55,15 @@ InstanceSegmentationEval/
 | `test_class_metrics.csv`                    | test set 클래스별 평가 결과                                                    |
 | `summary_map50.csv`                         | validation/test 전체 mAP@50 요약 결과                                        |
 
----
 
-## 3. 코드 구조
+<br>
+<br>
 
-### 3.1 `InstanceSegmentationEval.py`
+
+
+## 1-3. 코드 구조
+
+### 1-3-1 `InstanceSegmentationEval.py`
 
 `InstanceSegmentationEval.py`는 전체 실행 순서를 담당한다.
 이 파일에서는 모델을 로드하고, validation/test set에 대해 inference를 수행한 뒤, mAP@50과 클래스별 metric을 계산한다.
@@ -76,7 +81,7 @@ InstanceSegmentationEval/
 8. summary_map50.csv 저장
 ```
 
-### 3.2 `pretrained_inference_eval_assignment01.py`
+### 1-3-2 `pretrained_inference_eval_assignment01.py`
 
 `pretrained_inference_eval_assignment01.py`는 실제 inference와 evaluation에 필요한 함수들을 포함한다.
 
@@ -94,9 +99,13 @@ InstanceSegmentationEval/
 | `save_class_metrics_csv()`          | 클래스별 평가 결과를 CSV 파일로 저장                      |
 | `evaluate_split()`                  | 하나의 split에 대해 전체 평가 수행                      |
 
----
 
-## 4. 데이터셋 및 클래스 구성
+<br>
+<br>
+
+
+
+## 1-4. 데이터셋 및 클래스 구성
 
 데이터셋은 COCO format으로 제공되었으며, validation/test set의 annotation 파일은 각각 다음 위치에 존재한다.
 
@@ -129,9 +138,12 @@ dataset-coco-seg/test/_annotations.coco.json
 
 단, 실제 GT annotation에서는 `bottom-0LAX`, `background`, `button`, `loop`, `tag` 등 일부 클래스의 GT 개수가 0인 경우가 존재하였다. 이러한 클래스는 AP 계산 시 `N/A`로 처리하였다.
 
----
 
-## 5. Inference 방법
+<br>
+<br>
+
+
+## 1-5. Inference 방법
 
 사전학습 모델은 다음 파일을 사용하였다.
 
@@ -171,9 +183,13 @@ rle = mask_utils.encode(binary_mask)
 }
 ```
 
----
 
-## 6. Confidence Threshold 설정 근거
+<br>
+<br>
+
+
+
+## 1-6. Confidence Threshold 설정 근거
 
 Inference confidence threshold는 `0.1`로 설정하였다.
 
@@ -191,9 +207,12 @@ Inference confidence threshold는 `0.1`로 설정하였다.
 따라서 최종 inference threshold는 validation set에서 가장 높은 mAP@50을 보인 `0.1`로 결정하였다.
 test set은 threshold 선택에 사용하지 않고, validation set에서 선택된 threshold를 그대로 적용하여 최종 성능 평가에만 사용하였다.
 
----
 
-## 7. 평가 방법
+<br>
+<br>
+
+
+## 1-7. 평가 방법
 
 평가는 `pycocotools`의 `COCOeval`을 사용하였다.
 annotation type은 `segm`으로 설정하여 segmentation mask 기준 평가를 수행하였다.
@@ -218,9 +237,13 @@ coco_eval.params.iouThrs = np.array([0.5])
 | confidence threshold | 0.10         |
 | metric               | mAP@50       |
 
----
 
-## 8. 전체 mAP@50 평가 결과
+<br>
+<br>
+
+
+
+## 1-8. 전체 mAP@50 평가 결과
 
 최종 평가 결과는 다음과 같다.
 
@@ -231,9 +254,13 @@ coco_eval.params.iouThrs = np.array([0.5])
 
 validation set의 segmentation mAP@50은 `0.532781`로 측정되었고, test set의 segmentation mAP@50은 `0.567696`으로 측정되었다.
 
----
 
-## 9. Validation Set 클래스별 평가 결과
+<br>
+<br>
+
+
+
+## 1-9. Validation Set 클래스별 평가 결과
 
 validation set의 클래스별 주요 결과는 다음과 같다.
 
@@ -254,9 +281,13 @@ validation set의 클래스별 주요 결과는 다음과 같다.
 
 validation set에서는 `cuffs`, `hem`, `logo`, `quarter`, `band` 클래스의 AP@50이 상대적으로 높게 나타났다. 반면 `decoration`, `lace`, `placket`, `zipper` 클래스는 AP@50이 0으로 측정되어 성능 개선이 필요한 클래스로 확인되었다.
 
----
 
-## 10. Test Set 클래스별 평가 결과
+<br>
+<br>
+
+
+
+## 1-10. Test Set 클래스별 평가 결과
 
 test set의 클래스별 주요 결과는 다음과 같다.
 
@@ -272,9 +303,13 @@ test set의 클래스별 주요 결과는 다음과 같다.
 
 test set에서는 `quarter`, `logo`, `hem`, `band` 클래스가 상대적으로 높은 AP@50을 보였다. 반면 `pocket` 클래스는 prediction 개수에 비해 FP가 많아 precision이 낮게 나타났고, `zipper` 클래스는 TP가 발생하지 않아 AP@50이 0으로 측정되었다.
 
----
 
-## 11. 결과 분석
+<br>
+<br>
+
+
+
+## 1-11. 결과 분석
 
 전체적으로 validation mAP@50은 `0.532781`, test mAP@50은 `0.567696`으로 측정되었다. test set의 mAP@50이 validation set보다 약간 높게 나타났으며, 이는 test set 내에서 상대적으로 예측이 쉬운 클래스 또는 큰 객체 비중이 존재했을 가능성이 있다.
 
@@ -282,9 +317,11 @@ test set에서는 `quarter`, `logo`, `hem`, `band` 클래스가 상대적으로 
 
 또한 `pocket`, `quarter`, `logo`, `hem` 클래스에서는 recall은 높지만 precision이 낮은 경우가 확인되었다. 이는 confidence threshold가 낮아 많은 객체 후보를 검출하면서 TP는 확보했지만, 동시에 FP도 증가했기 때문으로 해석할 수 있다. 특히 `pocket` 클래스는 validation set에서 18개의 GT에 대해 74개의 prediction이 발생했고, test set에서도 5개의 GT에 대해 23개의 prediction이 발생하여 FP가 많은 클래스임을 확인할 수 있었다.
 
----
+<br>
+<br>
 
-## 12. 산출 파일
+
+## 1-12. 산출 파일
 
 실행 결과 다음 파일들이 생성되었다.
 
@@ -296,12 +333,172 @@ test set에서는 `quarter`, `logo`, `hem`, `band` 클래스가 상대적으로 
 | `test_class_metrics.csv`  | test set 클래스별 평가 결과          |
 | `summary_map50.csv`       | validation/test mAP@50 요약 결과 |
 
----
 
-## 13. 결론
+<br>
+<br>
+
+
+## 1-13. 결론
 
 본 구현에서는 제공된 사전학습 instance segmentation 모델 `IS_pretrained_bottom.pt`를 사용하여 validation set과 test set에 대한 inference 및 평가를 수행하였다. 예측 결과는 COCO result JSON format으로 저장하였고, `pycocotools.COCOeval`을 사용하여 segmentation mAP@50을 계산하였다.
 
 최종적으로 validation set에서는 `mAP@50 = 0.532781`, test set에서는 `mAP@50 = 0.567696`을 얻었다. 클래스별 분석 결과, `cuffs`, `hem`, `logo`, `quarter`, `band` 클래스에서는 비교적 높은 성능을 보였으나, `decoration`, `lace`, `placket`, `zipper`, `pocket` 클래스에서는 성능 개선이 필요한 것으로 확인되었다.
 
 향후 성능 개선을 위해서는 클래스별 confidence threshold 조정, FP가 많은 클래스에 대한 후처리, 부족한 클래스의 데이터 보강, 오픈소스 segmentation 모델 fine-tuning 등의 전략을 적용할 수 있다.
+
+
+<br>
+<br>
+<br>
+
+
+---
+
+<br>
+<br>
+<br>
+
+
+
+# 2. 추론성능 개선 전략 및 재학습 전략
+<br>
+
+## 2-1. 현재 사전학습 모델 성능 요약
+평가 결과, 제공된 사전학습 모델 IS_pretrained_bottom.pt의 성능은 다음과 같이 측정되었다. <br>
+| split      |   mAP@50 |
+| ---------- | -------: |
+| validation | 0.532781 |
+| test       | 0.567696 |
+
+<br>
+<br>
+
+
+## 2-2. 클래스별 성능 분석
+validation set 기준으로 성능이 좋은 클래스와 낮은 클래스를 나누면 다음과 같다.
+
+### 2-2-1 성능이 좋은 클래스
+cuffs, hem, logo, quarter, band는 AP@50이 비교적 높게 나타났다. <br>
+그러나 hem, logo, quarter는 recall은 높지만 precision이 낮다. <br>
+즉, 실제 객체를 많이 찾기는 하지만 false positive도 많이 발생하고 있다.
+
+| class   |    AP@50 | Precision |   Recall |
+| ------- | -------: | --------: | -------: |
+| cuffs   | 1.000000 |  1.000000 | 1.000000 |
+| hook    | 1.000000 |  0.166667 | 1.000000 |
+| hem     | 0.905697 |  0.479167 | 0.920000 |
+| logo    | 0.904348 |  0.393939 | 1.000000 |
+| quarter | 0.862410 |  0.258427 | 0.884615 |
+| band    | 0.739824 |  0.708333 | 0.772727 |
+
+
+### 2-2-2 성능이 낮은 클래스
+특히 pocket은 validation set에서 GT 18개에 대해 prediction이 74개 발생했고, TP는 10개, FP는 64개로 precision이 0.135135에 불과하다.<br>
+test set에서도 GT 5개에 대해 prediction 23개, TP 2개, FP 21개로 precision이 0.086957이다. <br>
+따라서 pocket은 false positive를 줄이는 전략이 필요하다.
+
+| class      |    AP@50 | 문제           |
+| ---------- | -------: | ------------ |
+| decoration | 0.000000 | TP 없음, FP 많음 |
+| lace       | 0.000000 | TP 없음        |
+| placket    | 0.000000 | 예측 없음        |
+| zipper     | 0.000000 | TP 없음        |
+| pocket     | 0.476141 | FP가 매우 많음    |
+
+
+
+
+<br>
+<br>
+
+## 2-3. 사전학습 모델 기반 추론성능 개선 전략
+재학습 전에 먼저 기존 모델의 inference/post-processing을 개선한다.
+
+### 2-3-1 Class-wise confidence threshold 적용
+현재 전체 클래스에 동일하게 confidence threshold = 0.1을 적용하였다. <br>
+이 값은 전체 validation mAP@50 기준으로 가장 좋았지만, 클래스별로 보면 false positive가 많은 클래스가 존재한다.<br>
+
+예를 들어 validation set에서 아래 표에 있는 클래스들은 recall은 높지만 FP가 많으므로 threshold를 높이는 실험이 필요하다.
+| class   | GT | PRED | TP | FP | Precision |
+| ------- | -: | ---: | -: | -: | --------: |
+| pocket  | 18 |   74 | 10 | 64 |  0.135135 |
+| quarter | 26 |   89 | 23 | 66 |  0.258427 |
+| logo    | 13 |   33 | 13 | 20 |  0.393939 |
+| hem     | 25 |   48 | 23 | 25 |  0.479167 |
+
+   - 적용 방향
+     FP가 많은 클래스 → threshold 증가
+     FN이 많은 클래스 → threshold 감소 또는 유지
+     AP가 0인 클래스 → threshold보다 데이터/학습 문제 우선 확인
+
+   - 기대 효과
+     pocket, quarter, logo, hem 클래스의 FP 감소
+     precision 향상
+     전체 mAP@50 개선 가능
+
+
+
+
+### 2-3-2 클래스별 후처리 적용
+pocket, quarter, logo, hem처럼 prediction이 많은 클래스는 작은 mask noise나 중복 mask가 FP로 이어질 수 있다. <br>
+따라서 클래스별로 후처리를 적용한다. 단, 작은 객체 클래스인 hook, lace, zipper에는 강한 area filtering을 적용하면 오히려 TP가 사라질 수 있다.
+   - 적용 방향
+   1. 작은 mask area 제거
+   2. 너무 길거나 비정상적인 bbox ratio 제거
+   3. connected component 기반 작은 조각 제거
+   4. 클래스별 NMS threshold 조정
+   5. 같은 이미지 안에서 과도하게 많은 prediction 제한
+
+
+### 2-3-3 validation 기반 threshold sweep 자동화
+현재 threshold 0.1은 실험 결과 가장 좋았기 때문에 사용하였다.  <br>
+하지만 모델을 재학습하면 optimal threshold도 바뀔 수 있다.  <br>
+따라서 재학습 모델마다 validation set에서 threshold sweep을 다시 수행한다. <br>
+   - 평가 기준
+   1. validation mAP@50 최대
+   2. 클래스별 AP@50 개선 여부
+   3. FP가 많은 클래스의 precision 개선 여부
+   4. test set은 최종 1회 평가에만 사용
+
+
+
+<br>
+<br>
+
+
+## 2-4. 사전학습 모델 기반 추론성능 개선 전략
+
+
+### 2-4-1 RF-DETR Segmentation fine-tuning 
+동일 계열 모델을 train set으로 fine-tuning하는 것이 가장 자연스러움. 
+단, 데이터셋이 작다면 큰 모델은 overfitting될 수 있으므로 validation mAP@50 기준으로 선택.
+  - 현재 baseline과 모델 계열이 유사함
+  - COCO format dataset을 활용하기 좋음
+  - 기존 inference/evaluation 코드 재사용 가능
+  - 제공 모델보다 높은 성능을 목표로 fine-tuning하기 적합
+
+
+### 2-4-2 YOLO Segmentation 계열 fine-tuning
+작은 데이터셋에서 빠르게 baseline을 만들기 좋은 Ultralytics YOLO 사용.
+단, 데이터셋 변환이 필요. 
+   COCO segmentation format→ YOLO segmentation format
+   
+   - 학습과 추론 코드가 단순함
+   - 작은 데이터셋에서 빠르게 baseline을 만들기 좋음
+   - inference 속도가 빠른 편임
+   - ONNX/TensorRT export가 쉬워 1-3 실배포 속도 개선 전략과 연결하기 좋음
+
+### 2-4-3 Detectron2 Mask R-CNN fine-tuning
+two-stage model이라 작은 객체나 복잡한 mask에서 안정적인 경향을 보이는 Detectron2 (Meta/FAIR의 object detection 및 segmentation framework) 을 사용. Mask R-CNN, PointRend, TensorMask 등을 포함하는 baseline.
+
+   다음 논문에서 Faster R-CNN에 mask branch를 추가하여 object detection과 mask prediction을 동시에 수행하는 구조를 제안함.
+   (https://arxiv.org/abs/1703.06870?utm_source=chatgpt.com )
+
+   장점
+   - COCO format과 잘 맞음
+   - 클래스별 분석과 디버깅이 쉬움
+   - two-stage model이라 작은 객체나 복잡한 mask에서 안정적일 수 있음
+   단점
+   - YOLO 계열보다 inference가 느릴 수 있음
+   - Windows 환경 세팅이 번거로울 수 있음
+   - CUDA/PyTorch/Detectron2 버전 호환 확인 필요
