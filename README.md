@@ -6,6 +6,23 @@
 * torch :  2.12.0+cpu
 * Python : 3.11.0
 
+```python
+#패키지
+
+pip install torch torchvision  # PyTorch
+pip install rfdetr             # 모델 실행용
+pip install pycocotools        # COCO mAP 계산용
+pip install supervision        # 예측 결과 다루기 편하게 해주는 도구
+pip install opencv-python      # 이미지 처리 , COCO mask를 YOLO segmentation polygon 형태로 변환
+pip install pillow             # 이미지 열기
+pip install matplotlib         # 결과 시각화
+pip install tqdm               # 진행률 표시
+pip install ultralytics        # YOLO segmentation 학습
+
+```
+
+
+
 ```text
 InstanceSegmentationEval/
 │
