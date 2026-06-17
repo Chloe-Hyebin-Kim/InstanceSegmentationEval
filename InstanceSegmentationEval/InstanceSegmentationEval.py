@@ -1,124 +1,112 @@
-import json
-import torch
-from pathlib import Path
+import csv
 
-import numpy as np
-from PIL import Image
 from rfdetr import RFDETRSegMedium
-from pycocotools import mask as mask_utils
 
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
-
-PROJECT_ROOT = Path.cwd()
-
-MODEL_PATH = PROJECT_ROOT / "IS_pretrained_bottom.pt"
-DATASET_ROOT = PROJECT_ROOT / "dataset-coco-seg" / "dataset-coco-seg"
-
-VALID_DIR = DATASET_ROOT / "valid"
-TEST_DIR = DATASET_ROOT / "test"
-
-VALID_ANN_PATH = VALID_DIR / "_annotations.coco.json"
-TEST_ANN_PATH = TEST_DIR / "_annotations.coco.json"
-
-VALID_OUTPUT_JSON_PATH = PROJECT_ROOT / "valid_predictions.json"
-TEST_OUTPUT_JSON_PATH = PROJECT_ROOT / "test_predictions.json"
-
-print("\n")
-print("-------------------------- PATH --------------------------")
-
-print("MODEL exists:", MODEL_PATH.exists())
-print("VALID_ANN exists:", VALID_ANN_PATH.exists())
-print("TEST_ANN exists:", TEST_ANN_PATH.exists())
-
-print("\n")
-print("-------------------------- DATA SET --------------------------")
-
-with open(VALID_ANN_PATH, "r", encoding="utf-8") as f:
-    valid_data = json.load(f)
-    valid_images = valid_data["images"]
-
-with open(TEST_ANN_PATH, "r", encoding="utf-8") as f:
-    test_data = json.load(f)
-    test_images = test_data["images"]
+from pretrained_inference_eval_assignment01 import (
+    MODEL_PATH,
+    VALID_DIR,
+    TEST_DIR,
+    VALID_ANN_PATH,
+    TEST_ANN_PATH,
+    VALID_PRED_PATH,
+    TEST_PRED_PATH,
+    VALID_CLASS_METRIC_PATH,
+    TEST_CLASS_METRIC_PATH,
+    SUMMARY_PATH,
+    CONF_THRES,
+    IOU_THRES,
+    check_paths,
+    print_dataset_categories,
+    run_inference,
+    evaluate_split,
+)
 
 
-print("valid images:", len(valid_data["images"]))
-print("valid image count:", len(valid_images))
-print("valid annotations:", len(valid_data["annotations"]))
+# ============================================================
+# main
+# ============================================================
 
-print("test images:", len(test_data["images"]))
-print("test image count:", len(test_images))
-print("test annotations:", len(test_data["annotations"]))
+def main():
+    check_paths()
 
-print("\n")
-print("-------------------------- PRETRAINED MODEL --------------------------")
+    print_dataset_categories(VALID_ANN_PATH, "VALID")
+    print_dataset_categories(TEST_ANN_PATH, "TEST")
 
-model = RFDETRSegMedium.from_checkpoint(str(MODEL_PATH))
-#ckpt = torch.load(
-#    MODEL_PATH,
-#    map_location="cpu",
-#    weights_only=False
-#)
+    print()
+    print("-------------------------- MODEL LOAD --------------------------")
 
-#print("model load success")
-#print("checkpoint type:", type(ckpt))
+    model = RFDETRSegMedium.from_checkpoint(str(MODEL_PATH))
 
-#if isinstance(ckpt, dict):
-#    print("checkpoint keys:", ckpt.keys())
+    print("model loaded:", MODEL_PATH)
 
-#    if "args" in ckpt:
-#        print("args:")
-#        print(ckpt["args"])
+    model_class_names = getattr(model, "class_names", None)
 
-#    if "model" in ckpt:
-#        print("model weights type:", type(ckpt["model"]))
-#        print("number of weight keys:", len(ckpt["model"]))
+    print("model.class_names:")
+    print(model_class_names)
 
-print("\n")
-print("-------------------------- VALID INFERENCE --------------------------")
+    run_inference(
+        model=model,
+        image_dir=VALID_DIR,
+        annotation_path=VALID_ANN_PATH,
+        output_path=VALID_PRED_PATH,
+        title="VALID",
+    )
 
-predictions = []
+    run_inference(
+        model=model,
+        image_dir=TEST_DIR,
+        annotation_path=TEST_ANN_PATH,
+        output_path=TEST_PRED_PATH,
+        title="TEST",
+    )
 
-for idx, image_info in enumerate(valid_images, start=1):
-    image_id = image_info["id"]
-    file_name = image_info["file_name"]
-    image_path = VALID_DIR / file_name
+    valid_map50 = evaluate_split(
+        annotation_path=VALID_ANN_PATH,
+        prediction_path=VALID_PRED_PATH,
+        class_metric_path=VALID_CLASS_METRIC_PATH,
+        title="VALID",
+    )
 
-    print(f"[{idx}/{len(valid_images)}] inference: {file_name}")
+    test_map50 = evaluate_split(
+        annotation_path=TEST_ANN_PATH,
+        prediction_path=TEST_PRED_PATH,
+        class_metric_path=TEST_CLASS_METRIC_PATH,
+        title="TEST",
+    )
 
-    image = Image.open(image_path).convert("RGB")
-    detections = model.predict(image, threshold=0.05)
+    with open(SUMMARY_PATH, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "split",
+                "map50",
+                "conf_threshold",
+                "iou_threshold",
+            ],
+        )
 
-    if detections.mask is None:
-        continue
+        writer.writeheader()
 
-    for mask, class_id, score in zip(
-        detections.mask,
-        detections.class_id,
-        detections.confidence
-    ):
-        mask = np.asfortranarray(mask.astype(np.uint8))
-
-        rle = mask_utils.encode(mask)
-        rle["counts"] = rle["counts"].decode("utf-8")
-
-        predictions.append({
-            "image_id": int(image_id),
-            "category_id": int(class_id),
-            "segmentation": rle,
-            "score": float(score),
+        writer.writerow({
+            "split": "valid",
+            "map50": valid_map50,
+            "conf_threshold": CONF_THRES,
+            "iou_threshold": IOU_THRES,
         })
 
-        
-print("\n")
-print("-------------------------- SAVE VALID RESULT --------------------------")
+        writer.writerow({
+            "split": "test",
+            "map50": test_map50,
+            "conf_threshold": CONF_THRES,
+            "iou_threshold": IOU_THRES,
+        })
 
-with open(VALID_OUTPUT_JSON_PATH, "w", encoding="utf-8") as f:
-    json.dump(predictions, f)
+    print()
+    print("-------------------------- FINAL SUMMARY --------------------------")
+    print(f"VALID mAP@50: {valid_map50:.6f}")
+    print(f"TEST  mAP@50: {test_map50:.6f}")
+    print(f"summary saved: {SUMMARY_PATH}")
 
-print("saved:", VALID_OUTPUT_JSON_PATH)
-print("prediction count:", len(predictions))
 
-
-#valid_predictions.json
+if __name__ == "__main__":
+    main()

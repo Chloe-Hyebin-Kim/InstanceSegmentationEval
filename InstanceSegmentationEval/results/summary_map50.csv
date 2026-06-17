@@ -1,0 +1,3 @@
+﻿split,map50,conf_threshold,iou_threshold
+valid,0.5327809589888073,0.1,0.5
+test,0.5676960553198177,0.1,0.5

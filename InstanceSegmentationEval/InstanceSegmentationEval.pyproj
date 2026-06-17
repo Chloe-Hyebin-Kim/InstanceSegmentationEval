@@ -21,10 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="01_pretrained_inference_eval.py">
+    <Compile Include="InstanceSegmentationEval.py" />
+    <Compile Include="pretrained_inference_eval_assignment01.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="InstanceSegmentationEval.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
