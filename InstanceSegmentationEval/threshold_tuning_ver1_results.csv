@@ -1,6 +1,0 @@
-﻿threshold,prediction_count,map50,prediction_json
-0.05,876,0.6161142923221407,valid_predictions_th005.json
-0.1,344,0.5327809589888073,valid_predictions_th010.json
-0.2,161,0.49846771997259803,valid_predictions_th020.json
-0.3,132,0.46822665238757866,valid_predictions_th030.json
-0.5,109,0.3568405137737173,valid_predictions_th050.json

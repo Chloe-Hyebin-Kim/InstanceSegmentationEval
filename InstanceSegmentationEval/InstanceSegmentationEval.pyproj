@@ -21,13 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="eval_map.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="eval_test_map.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="inference_test.py">
+    <Compile Include="01_pretrained_inference_eval.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InstanceSegmentationEval.py" />
