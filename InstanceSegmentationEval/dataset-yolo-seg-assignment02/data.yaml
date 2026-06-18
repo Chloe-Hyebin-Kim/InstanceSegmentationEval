@@ -1,0 +1,23 @@
+path: D:/git/InstanceSegmentationEval/InstanceSegmentationEval/dataset-yolo-seg-assignment02
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: bottom-0LAX
+  1: background
+  2: band
+  3: beltloop
+  4: button
+  5: cuffs
+  6: decoration
+  7: hem
+  8: hook
+  9: lace
+  10: logo
+  11: loop
+  12: placket
+  13: pocket
+  14: quarter
+  15: tag
+  16: zipper
