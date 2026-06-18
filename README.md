@@ -1,15 +1,19 @@
 # Instance Segmentation 
 
 ### 
-
+gpu name: NVIDIA GeForce RTX 5080
 * VisualStudio2019
-* torch :  2.12.0+cpu
 * Python : 3.11.0
+* torch :  ~2.12.0+cpu~ -> torch: 2.11.0+cu128 변경 (CUDA 12.8 wheel)
+* cuda version: 12.8
+* gpu count: 1
+* gpu name: NVIDIA GeForce RTX 5080
 
 ```python
-#패키지
+#설치 패키지
 
-pip install torch torchvision  # PyTorch
+#pip install torch torchvision  # PyTorch #CPU 전용 PyTorch-> CUDA 지원 버전으로변경...
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128  #CUDA 지원 버전(CUDA 12.8 wheel)
 pip install rfdetr             # 모델 실행용
 pip install pycocotools        # COCO mAP 계산용
 pip install supervision        # 예측 결과 다루기 편하게 해주는 도구
