@@ -21,6 +21,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="evaluate_trained_model_assignment02.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fix_coco_json_assignment02.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="InstanceSegmentationEval.py" />
     <Compile Include="pretrained_inference_eval_assignment01.py">
       <SubType>Code</SubType>
