@@ -1,0 +1,3 @@
+﻿model,valid_map50,test_map50
+baseline_IS_pretrained_bottom,0.532781,0.567696
+yolo_seg_assignment02,0.603550719023961,0.5702263083451202
