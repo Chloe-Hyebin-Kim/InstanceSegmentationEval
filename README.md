@@ -99,11 +99,11 @@ COCO AP는 단순 precision만 보는 지표가 아니라, confidence score 순�
     │     └─ _annotations.coco.json
     │
     └─ results/
-       ├─ valid_predictions.json
-       ├─ test_predictions.json
-       ├─ valid_class_metrics.csv
-       ├─ test_class_metrics.csv
-       └─ summary_map50.csv
+       ├─ valid_predictions.json    #validation set 예측 결과
+       ├─ test_predictions.json     #test set 예측 결과
+       ├─ valid_class_metrics.csv   #validation 클래스별 AP@50, TP, FP, FN, Precision, Recall
+       ├─ test_class_metrics.csv    #test 클래스별 AP@50, TP, FP, FN, Precision, Recall
+       └─ summary_map50.csv         #valid/test 전체 mAP@50 요약
     ```
     
  4) 결과
