@@ -4,7 +4,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f042cb11-b163-41bc-8992-856b526b982c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>InstanceSegmentationEval.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -36,26 +37,13 @@
     <Compile Include="config.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="evaluate_trained_model_assignment02.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="evaluation.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="fix_coco_json_assignment02.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="inference.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="InstanceSegmentationEval.py" />
     <Compile Include="metrics.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="pretrained_inference_eval_assignment01.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="train_instance_segmentation_assignment02.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utils.py">
