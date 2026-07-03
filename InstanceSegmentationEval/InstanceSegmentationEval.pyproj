@@ -21,17 +21,44 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="01_pretrained_inference_eval.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="02_evaluate_yolo_segmentation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="02_fix_coco_json.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="02_train_yolo_segmentation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="evaluate_trained_model_assignment02.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="evaluation.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="fix_coco_json_assignment02.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="inference.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="InstanceSegmentationEval.py" />
+    <Compile Include="metrics.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pretrained_inference_eval_assignment01.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="train_instance_segmentation_assignment02.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utils.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
