@@ -302,28 +302,21 @@ test set 기준 segmentation mAP@50은 0.567696이었다.
 따라서 단순히 기존 모델을 그대로 사용하는 것보다, train set을 이용해 현재 데이터셋에 맞게 instance segmentation 모델을 fine-tuning하는 것이 성능 개선에 더 적합하다고 판단했다. 이를 위한 성능 개선 방법으로는 새로운 instance segmentation 모델을 학습하는 방식을 선택했다. 후보로는 RF-DETR 추가 학습, Mask R-CNN 계열 모델, YOLO segmentation 모델이 있었다. 그중 YOLO11s-seg 모델을 선택하였다.
 
 2) 개선 과정
-   - fine tuning
-     먼저 COCO segmentation 형식으로 제공된 train, validation, test annotation을 YOLO segmentation 학습 형식으로 변환했다. COCO    annotation에는 polygon 또는 RLE segmentation 정보가 포함되어 있으므로, 이를 YOLO segmentation label format에 맞게 class id와 normalized polygon 좌표로 변환하였다.
-     학습 데이터 변환 과정에서 train annotation JSON의 metadata 부분에 문법 오류가 있어 json.decoder.JSONDecodeError가 발생했다. 오류는 info 항목 안에 key 없이 문자열이 들어가 있었기 때문에 발생했다. 이 부분은 실제 annotation 데이터가 아니라 metadata였으므로, "description" key를 추가하여 정상 JSON 형식으로 수정하였다. 이후 train annotation은 정상적으로 로드되었고, train 195장, validation 20장, test 5장의 데이터셋을 사용할 수 있었다.
-     그 다음 YOLO11s-seg pretrained weight를 불러와 현재 데이터셋의 17개 class에 맞게 fine-tuning하였다. 학습은 RTX 5080 GPU 환경에서 진행했으며, 총 100 epochs 동안 학습하였다. 학습 결과 best.pt 모델이 저장되었고, 이를 사용하여 validation/test set에 대해 다시 추론을 수행하였다.
-     마지막으로 YOLO 자체 평가 결과만 사용하지 않고, 기존 pretrained RF-DETR 모델과 동일한 방식으로 비교하기 위해 COCOeval 기반 segmentation mAP@50 평가를 수행했다. 이를 위해 YOLO 예측 결과를 COCO prediction JSON 형식으로 변환한 뒤, 기존 평가 코드와 같은 조건에서 mAP@50을 계산하였다.
-
+   - YOLO Segmentation fine-tuning
+     2. YOLO segmentation 모델 fine tuningd을 통해 best.pt 생성 (100 epochs)
+     3. 이를 사용하여 validation/test set에 대해 다시 추론
+     4. 비교를 위해 기존 pretrained RF-DETR 모델과 동일한 COCOeval 방식으로 mAP@50을 계산
+     5. baseline 모델과 YOLO fine tuning 모델 성능 비교
    - 후처리 및 threshold 조정
-     처음 YOLO 모델을 평가할 때 confidence threshold를 0.1로 설정했을 때는 test mAP@50이 0.563861로 기존 baseline인 0.567696보다 약간 낮았다. 그러나 COCO AP 평가는 confidence score 순위 전체를 활용하는 방식이므로, 너무 높은 threshold를 사용하면 AP 계산에 필요한 낮은 confidence 후보들이 제거될 수 있다.
-     따라서 평가용 confidence threshold를 0.001로 낮추어 다시 평가하였다. 이 설정을 적용하자 validation prediction 수는 142개에서 555개로 증가했고, test prediction 수는 33개에서 103개로 증가했다. 그 결과 validation mAP@50과 test mAP@50이 모두 상승하였다.
-
+     1.평가용 confidence threshold를 0.001로 낮추어 다시 평가 (COCO AP 평가는 confidence score 순위 전체를 활용하는 방식이므로, 낮은 confidence로도 정답에 가까운 후보를 생성할 수 있기 때문)
 
 
 3)성능 비교 결과
+- Validation set에서는 mAP@50이 0.532781에서 0.603551로 향상되었다.
+-Test set에서는 mAP@50이 0.567696에서 0.570226으로 향상되었다.
 
-| 모델                    | VALID mAP@50 | TEST mAP@50 |
-| --------------------- | -----------: | ----------: |
-| 기존 pretrained RF-DETR |     0.532781 |    0.567696 |
-| 학습한 YOLO11s-seg       |     0.603551 |    0.570226 |
-
-Validation set에서는 mAP@50이 0.532781에서 0.603551로 향상되었다. 향상폭은 다음과 같다. <br>
-0.603551 - 0.532781 = +0.070770 <br>
-Test set에서는 mAP@50이 0.567696에서 0.570226으로 향상되었다. 향상폭은 다음과 같다. <br>
-0.570226 - 0.567696 = +0.002530 <br>
-Test set에서의 향상폭은 크지는 않지만, 과제 목표였던 “제공된 사전학습 모델보다 높은 성능 달성” 조건은 만족하였다.
+| 모델                    | VALID mAP@50 | TEST mAP@50 | GAP |
+| --------------------- | -----------: | ----------: | ----------: |
+| 기존 pretrained RF-DETR |     0.532781 |    0.567696 |    +0.070770|
+| 학습한 YOLO11s-seg       |     0.603551 |    0.570226 |    +0.002530|
 
